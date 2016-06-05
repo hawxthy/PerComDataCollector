@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">PerCom Data Collector</string>
+    <string name="strName">PerCom Acc Data Collector</string>
+    <string name="strAccTitle">Sensor (x,y,z)</string>
+    <string name="strAccData">0.00, 0.00, 0.00</string>
+    <string name="strButtonTitle">Dateigröße: -</string>
+    <string name="local_service_started">fileservicearff</string>
+    <string name="local_service_label">Service läuft...</string>
+    <string name="local_service_stopped">Service gestoppt!</string>
+    <string name="strSport">Kraftsport</string>
+    <string name="strJogging">Joggen</string>
+    <string name="strWalking">Gehen</string>
+    <string name="strExportToSdCard">Export auf SD-Karte</string>
+    <string name="strNotCollect">AUS: Keine Daten erfassen</string>
+    <string name="strCollect">AN: Daten erfassen</string>
+    <string name="strDeleteFile">Datei löschen</string>
+</resources>
