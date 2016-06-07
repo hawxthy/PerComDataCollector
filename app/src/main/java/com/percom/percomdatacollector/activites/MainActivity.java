@@ -220,15 +220,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onResume();
 
         // Generate Binding and FileSerive
-        bindConnectionAndStartFileService();
+        //bindConnectionAndStartFileService();
         // registerAccelerometer(sensorManager);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        unbindConnectioonAndKillfileService();
-        finish();
+        // unbindConnectioonAndKillfileService();
+        // finish();
     }
 
     @Override
@@ -238,8 +238,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Only destroy the service when the activity was destroyed
         // unregisterAccelerometer(sensorManager);
         // unbindConnectioonAndKillfileService();
-        unbindConnectioonAndKillfileService();
-        finish();
+        // unbindConnectioonAndKillfileService();
+        // finish();
     }
 
     @Override
