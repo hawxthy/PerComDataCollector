@@ -1,8 +1,8 @@
 package com.percom.percomdatacollector.Files;
 
 /**
- * This class is a simple POJO class. It's only purpose is to save the accelerometer data
- * as an ARFF file.
+ * This class is a simple POJO class. Its only purpose is to save the sensor data
+ * as an ARFF file. One ArffFile-Object represents one file.
  *
  * @author Tristan Rust
  */
@@ -25,6 +25,11 @@ public class ArffFile {
      */
     public ArffFile() {}
 
+    /**
+     * Overloaded constructor with initialization information for the file.
+     * @param strFileName: String: The filename of the *.arff file.
+     * @param strFileContent: String: Content which will be written into the file.
+     */
     public ArffFile(String strFileName, String strFileContent) {
         setStrFileName(strFileName, false);
         setStrFileContent(strFileContent);
@@ -53,7 +58,7 @@ public class ArffFile {
     }
 
     /**
-     * Returns the FileName without the Filetype.
+     * Returns the FileName without the filetype.
      */
     public String getClearFileName() {
         String[] strClearFileName = this.strFileName.split(FILE_TYPE_ARFF);

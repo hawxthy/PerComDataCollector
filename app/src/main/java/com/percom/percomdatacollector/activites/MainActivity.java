@@ -86,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 // Load the content from the .arff file
                 FileHandler.getInstance().setCurrentArffFile(fileService.loadFileFromDevice(fileService.openFileInput(FILE_NAME)));
                 FileHandler.getInstance().getCurrentArffFile().setStrFileName(FILE_NAME, false);
+
+                txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
             } catch (FileNotFoundException e) {
                 // Create a new file if no file was found
                 addArffFile();
@@ -97,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             fileService = null;
         }
     };
+
+    public FileService getFileService() {return fileService;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,10 +122,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // The toggle is enabled
-                    // Generate Binding and FileService
                     // bindConnectionAndStartFileService();
+                    // start sensor recording
                     registerAccelerometer(sensorManager);
                 } else {
+                    // stop sensor recording
                     unregisterAccelerometer(sensorManager);
                 }
             }
@@ -169,9 +174,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void exportToSdCard() {
         if (this.getFileService() != null) {
             // Generate ArffFile
-
-
-
             ArffFile arffFile = FileHandler.getInstance().getCurrentArffFile();
 
             // Use FileService for export
@@ -193,7 +195,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         // check if accelerometer is available
         if (accelerometer != null) {
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+            // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
         } else {
             // Error, do something here
         }
@@ -337,8 +341,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    public FileService getFileService() {return fileService;}
-
     /**
      * Accelerometer methode.
      */
@@ -361,7 +363,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         txtvAccData.setText(Float.toString(x) + ", " + Float.toString(y) + ", " + Float.toString(z));
 
         // FileSize
-        txtvButtonTitle.setText("Dateigröße: " + Long.toString(getFileService().calcFileSize(FILE_NAME)) + "KB");
+        // txtvButtonTitle.setText("Dateigröße: " + Long.toString(getFileService().calcFileSize(FILE_NAME)) + "KB");
+        txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
 
         float mean = calcMean(x, y, z);
         float stdDeviation = (float) calcStdDeviation(x, y, z);
@@ -431,6 +434,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mean = ((x + y + z) / 3);
 
         return mean;
+    }
+
+    /**
+     * Return the file size as a string.
+     * @param fileSize: long: FileSize in KB.
+     * @return The method returns the file size in MB when the file size of 1024 KB is reached.
+     */
+    private String fileSizeToMBString(long fileSize) {
+        String strFileSize = "";
+
+        if (fileSize > 1024) {
+            fileSize = fileSize / 1024;
+            strFileSize = "Dateigröße: " + Long.toString(fileSize) + "MB";
+        } else {
+            strFileSize = "Dateigröße: " + Long.toString(fileSize) + "KB";
+        }
+
+        return strFileSize;
     }
 
 }

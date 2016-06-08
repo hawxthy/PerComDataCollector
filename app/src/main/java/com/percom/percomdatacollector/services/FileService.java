@@ -95,14 +95,14 @@ public class FileService extends Service {
      * Shows a notification in the status bar while this service is running.
      */
     private void showNotification() {
-        // In this sample, we'll use the same text for the ticker and the expanded notification
+        // Message which should be shown
         CharSequence text = getText(R.string.local_service_started);
 
-        // The PendingIntent to launch our activity if the user selects this notification
+        // The PendingIntent to launch the activity if the user selects this notification
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class), 0);
 
-        // Set the info for the views that show in the notification panel.
+        // Set the info for the views that show in the notification panel
         Notification notification = new Notification.Builder(this)
                 .setTicker(text)  // the status text
                 .setWhen(System.currentTimeMillis())  // the time stamp
@@ -111,13 +111,16 @@ public class FileService extends Service {
                 .setContentIntent(contentIntent)  // The intent to send when the entry is clicked
                 .build();
 
-        // Send the notification.
+        // Send the notification
         notificationManager.notify(NOTIFICATION, notification);
 
     }
 
     /**
      * Save the File in the device storage.
+     *
+     * @param arffFile : ArffFile : File which should be saved.
+     * @param fileOutputStream: FileOutputStream: Stream to write into the file.
      */
     public void saveAFile(ArffFile arffFile, FileOutputStream fileOutputStream) throws IOException{
         // Generate OutputStreamWriter
@@ -136,8 +139,8 @@ public class FileService extends Service {
 
     /**
      * Appends the record at the end of a file.
-     * @param record
-     * @param fileOutputStream
+     * @param record : String : Record which should be appended to the file.
+     * @param fileOutputStream : FileOutputStream: Stream to write into the file.
      * @throws IOException
      */
     public void appendToFile(String record, FileOutputStream fileOutputStream) throws IOException {
@@ -157,6 +160,8 @@ public class FileService extends Service {
 
     /**
      * Load the File from the device.
+     *
+     * @param fileInputStream : FileInputStream: Reads the file from the storage.
      */
     public ArffFile loadFileFromDevice(FileInputStream fileInputStream) {
         ArffFile arffFile = null;
@@ -204,7 +209,7 @@ public class FileService extends Service {
             arffFile = null;
         } finally {
             try {
-                // Hier werden alle Objekte und Streams geschlossen
+                // Close all objects and streams
                 if (in != null) {
                     in = null;
                 }
@@ -226,6 +231,8 @@ public class FileService extends Service {
 
     /**
      * This method save the ArffFile to the SD-Card.
+     *
+     * @param arffFile : ArffFile : ArffFile which should be saved.
      */
     public void exportAFileToSdCard(ArffFile arffFile) throws IOException {
         // State of the SD-Card
