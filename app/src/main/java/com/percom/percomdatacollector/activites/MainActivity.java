@@ -390,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent event) {
         Sensor sensorType = event.sensor;
 
+        // ACCELEROMETER
         if (sensorType.getType() == Sensor.TYPE_ACCELEROMETER) {
             // Accelerometer: Read the x, y, z values from the sensor event
             float x = event.values[0];
@@ -410,6 +411,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         }
 
+        // GYROSCOPE
         if (sensorType.getType() == Sensor.TYPE_GYROSCOPE) {
             // Gyroscope: Read the x, y, z axis values from the sensor event
             // Axis of the rotation (not normalized yet)
