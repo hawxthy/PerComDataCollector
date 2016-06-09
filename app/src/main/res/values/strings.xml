@@ -14,4 +14,6 @@
     <string name="strNotCollect">AUS: Keine Daten erfassen</string>
     <string name="strCollect">AN: Daten erfassen</string>
     <string name="strDeleteFile">Datei löschen</string>
+    <string name="strGyrTitle">Sensor: Gyroscope (x,y,z)</string>
+    <string name="strGryData">0.00, 0.00, 00</string>
 </resources>

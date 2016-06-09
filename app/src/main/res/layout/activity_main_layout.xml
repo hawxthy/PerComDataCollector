@@ -33,12 +33,38 @@
         android:textColor="@color/colorBlack"
         android:id="@+id/txtvAccData" />
 
+    <Space
+        android:layout_width="fill_parent"
+        android:layout_height="20px" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/strGyrTitle"
+        android:textColor="@color/colorBlack"
+        android:id="@+id/txtvGyrTitle" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/strGryData"
+        android:textColor="@color/colorBlack"
+        android:id="@+id/txtvGyrData" />
+
+    <Space
+        android:layout_width="fill_parent"
+        android:layout_height="20px" />
+
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/strButtonTitle"
         android:textColor="@color/colorBlack"
         android:id="@+id/txtvButtonTitle" />
+
+    <Space
+        android:layout_width="fill_parent"
+        android:layout_height="20px" />
 
     <ToggleButton
         android:layout_width="fill_parent"
