@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // TextViews
     private static TextView txtvAccData = null;
+    private static TextView txtvGyrData = null;
     private static TextView txtvButtonTitle = null;
 
     // Button
@@ -120,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Accelerometer
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
+        // Gyroscope
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+
         // listener
         tbRecord.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -129,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     // bindConnectionAndStartFileService();
                     // start sensor recording
                     registerAccelerometer(sensorManager);
+                    registerGyroscope(sensorManager);
                 } else {
                     // stop sensor recording
                     unregisterAccelerometer(sensorManager);
@@ -148,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View v) {
                 // Deletes the old file
                 deleteFile(FILE_NAME);
+                // Show the new file size in the UI
+                txtvButtonTitle.setText("Dateigröße: " + getFileService().calcFileSize(FILE_NAME));
                 // Creates a new one with the attributes
                 addArffFile();
             }
@@ -157,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void initializeWidgets() {
         // TextView
         txtvAccData = (TextView) findViewById(R.id.txtvAccData);
+        txtvGyrData = (TextView) findViewById(R.id.txtvGyrData);
         txtvButtonTitle = (TextView) findViewById(R.id.txtvButtonTitle);
 
         // Button
@@ -193,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     /**
-     * Register the listener for events and initialize the accelerometor
+     * Register the listener for events and initialize the accelerometor.
      */
     public void registerAccelerometer(SensorManager sensorManager) {
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -213,6 +221,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      * Disables the sensor if not needed.
      */
     public void unregisterAccelerometer(SensorManager sensorManager) {
+        sensorManager.unregisterListener(this);
+    }
+
+    /**
+     * Register the listener for events and initialize the gyrosceope.
+     */
+    public void registerGyroscope(SensorManager sensorManager) {
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        //check if gyroscope is available
+        if (gyroscope != null) {
+            sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_UI);
+        } else {
+            // Error do something here
+        }
+    }
+
+    /**
+     * Disables the sensor if not needed.
+     */
+    public void unregisterGyrosceope(SensorManager sensorManager) {
         sensorManager.unregisterListener(this);
     }
 
@@ -360,24 +388,69 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        // Accelerometer: Read the x, y, z values from the sensor event
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
+        Sensor sensorType = event.sensor;
 
-        // Accelerometer: Output
-        txtvAccData.setText(Float.toString(x) + ", " + Float.toString(y) + ", " + Float.toString(z));
+        if (sensorType.getType() == Sensor.TYPE_ACCELEROMETER) {
+            // Accelerometer: Read the x, y, z values from the sensor event
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
 
-        // Accelerometer: Calc attributes
-        float mean = calcMean(x, y, z);
-        float stdDeviation = (float) calcStdDeviation(x, y, z);
-        float min = findMin(x, y, z);
-        float max = findMax(x, y, z);
+            // Accelerometer: Output
+            txtvAccData.setText(Float.toString(x) + ", " + Float.toString(y) + ", " + Float.toString(z));
 
-        // Accelerometer: Write record into the .arff file
-        addNewRecord(mean, stdDeviation, min, max, getMovementType(), "accelerometer");
+            // Accelerometer: Calc attributes
+            float mean = calcMean(x, y, z);
+            float stdDeviation = (float) calcStdDeviation(x, y, z);
+            float min = findMin(x, y, z);
+            float max = findMax(x, y, z);
 
-        // Gyroscope: Read the x, y, z axis values from the sensor event
+            // Accelerometer: Write record into the .arff file
+            addNewRecord(mean, stdDeviation, min, max, getMovementType(), "accelerometer");
+
+        }
+
+        if (sensorType.getType() == Sensor.TYPE_GYROSCOPE) {
+            // Gyroscope: Read the x, y, z axis values from the sensor event
+            // Axis of the rotation (not normalized yet)
+            float axisX = event.values[0];
+            float axisY = event.values[1];
+            float axisZ = event.values[2];
+
+            // Gyroscope: Calculate the angular speed of the data
+            float omegaMagnitude = (float) Math.sqrt(axisX*axisX + axisY*axisY + axisZ*axisZ);;
+
+            // Gyroscope: Normalize the rotation vector if it's big enough to get the axis
+            /*if (omegaMagnitude > EPSILON) {
+                axisX /= omegaMagnitude;
+                axisY /= omegaMagnitude;
+                axisZ /= omegaMagnitude;
+            }*/
+
+            // Gyroscope: Delete the last few numbers, because the size is to big for the UI
+            String strAxisX = Float.toString(axisX);
+            String strAxisY = Float.toString(axisY);
+            String strAxisZ = Float.toString(axisZ);
+            // Deletes the last a specified nummber
+            int numberOfLetters = 3;
+
+            strAxisX = strAxisX.substring(0, strAxisX.length()-numberOfLetters);
+            strAxisY = strAxisY.substring(0, strAxisY.length()-numberOfLetters);
+            strAxisZ = strAxisZ.substring(0, strAxisZ.length()-numberOfLetters);
+
+            // Gyroscope: Output
+            txtvGyrData.setText(strAxisX + ", " + strAxisY + ", " + strAxisZ);
+
+            // Gyroscope: Calc attributes
+            float mean = calcMean(axisX, axisY, axisZ);
+            float stdDeviation = (float) calcStdDeviation(axisX, axisY, axisZ);
+            float min = findMin(axisX, axisY, axisZ);
+            float max = findMax(axisX, axisY, axisZ);
+
+            // Gyroscope: Write record into the .arff file
+            addNewRecord(mean, stdDeviation, min, max, getMovementType(), "gyroscope");
+
+        }
 
         // FileSize
         txtvButtonTitle.setText("Dateigröße: " + Long.toString(getFileService().calcFileSize(FILE_NAME)) + "KB");
