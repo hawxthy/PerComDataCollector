@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL); // Too slow
             // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST); // Freezes the UI - Async Task MAYBE???
 
-            // Synchronization with the UI-Thread in order not to freez the GUI
+            // Synchronization with the UI-Thread in order not to freeze the GUI
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
         } else {
             // Error, do something here
