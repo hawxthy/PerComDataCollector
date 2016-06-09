@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Accelerometer
     private static Sensor accelerometer = null;
 
+    // Gyroscope
+    private static Sensor gyroscope = null;
+
     /**
      * ServiceConnection to the FileService which creates a lose connection to the FileService.
      */
@@ -87,7 +90,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 FileHandler.getInstance().setCurrentArffFile(fileService.loadFileFromDevice(fileService.openFileInput(FILE_NAME)));
                 FileHandler.getInstance().getCurrentArffFile().setStrFileName(FILE_NAME, false);
 
-                txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
+                txtvButtonTitle.setText("Dateigröße: " + getFileService().calcFileSize(FILE_NAME));
+                // txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
             } catch (FileNotFoundException e) {
                 // Create a new file if no file was found
                 addArffFile();
@@ -195,8 +199,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         // check if accelerometer is available
         if (accelerometer != null) {
-            // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-            // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+            // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL); // Too slow
+            // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST); // Freezes the UI - Async Task MAYBE???
+
+            // Synchronization with the UI-Thread in order not to freez the GUI
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
         } else {
             // Error, do something here
@@ -288,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 + "@attribute min numeric\n"
                 + "@attribute max numeric\n"
                 + "@attribute movementType {walking,jogging,sport}\n"
-                + "@attribute sensor {accelerometer}\n"
+                + "@attribute sensor {accelerometer,gyroscope}\n"
                 + "\n"
                 + "@data";
 
@@ -354,24 +360,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     @Override
     public void onSensorChanged(SensorEvent event) {
-        // Read the x, y, z values from the sensor event
+        // Accelerometer: Read the x, y, z values from the sensor event
         float x = event.values[0];
         float y = event.values[1];
         float z = event.values[2];
 
-        // Output
+        // Accelerometer: Output
         txtvAccData.setText(Float.toString(x) + ", " + Float.toString(y) + ", " + Float.toString(z));
 
-        // FileSize
-        // txtvButtonTitle.setText("Dateigröße: " + Long.toString(getFileService().calcFileSize(FILE_NAME)) + "KB");
-        txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
-
+        // Accelerometer: Calc attributes
         float mean = calcMean(x, y, z);
         float stdDeviation = (float) calcStdDeviation(x, y, z);
         float min = findMin(x, y, z);
         float max = findMax(x, y, z);
 
+        // Accelerometer: Write record into the .arff file
         addNewRecord(mean, stdDeviation, min, max, getMovementType(), "accelerometer");
+
+        // Gyroscope: Read the x, y, z axis values from the sensor event
+
+        // FileSize
+        txtvButtonTitle.setText("Dateigröße: " + Long.toString(getFileService().calcFileSize(FILE_NAME)) + "KB");
+        // txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
 
     }
 
