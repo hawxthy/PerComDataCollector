@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 FileHandler.getInstance().setCurrentArffFile(fileService.loadFileFromDevice(fileService.openFileInput(FILE_NAME)));
                 FileHandler.getInstance().getCurrentArffFile().setStrFileName(FILE_NAME, false);
 
-                txtvButtonTitle.setText("Dateigröße: " + getFileService().calcFileSize(FILE_NAME));
+                txtvButtonTitle.setText("Dateigröße: " + getFileService().calcFileSize(FILE_NAME) + "KB");
                 // txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
             } catch (FileNotFoundException e) {
                 // Create a new file if no file was found
