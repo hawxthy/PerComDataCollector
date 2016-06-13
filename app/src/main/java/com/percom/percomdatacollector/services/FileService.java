@@ -106,6 +106,8 @@ public class FileService extends Service {
         Notification notification = new Notification.Builder(this)
                 .setTicker(text)  // the status text
                 .setWhen(System.currentTimeMillis())  // the time stamp
+                //Test
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getText(R.string.local_service_label))  // the label of the entry
                 .setContentText(text)  // the contents of the entry
                 .setContentIntent(contentIntent)  // The intent to send when the entry is clicked
