@@ -288,10 +288,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Only destroy the service when the activity was destroyed
         unregisterAccelerometer(sensorManager);
         unbindConnectioonAndKillfileService();
-
-        // Releases the claim to the CPU and battery waste
-        if (wakeLock != null)
-            wakeLock.release();
     }
 
     /**
