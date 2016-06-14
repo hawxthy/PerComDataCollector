@@ -4,7 +4,7 @@
     <string name="strAccTitle">Sensor: Accelerometer (x,y,z)</string>
     <string name="strAccData">0.00, 0.00, 0.00</string>
     <string name="strButtonTitle">Dateigröße: -</string>
-    <string name="local_service_started">fileservicearff</string>
+    <string name="local_service_started">FileService</string>
     <string name="local_service_label">Service läuft...</string>
     <string name="local_service_stopped">Service gestoppt!</string>
     <string name="strSport">Kraftsport</string>
@@ -15,5 +15,5 @@
     <string name="strCollect">AN: Daten erfassen</string>
     <string name="strDeleteFile">Datei löschen</string>
     <string name="strGyrTitle">Sensor: Gyroscope (x,y,z)</string>
-    <string name="strGryData">0.00, 0.00, 00</string>
+    <string name="strGryData">0.00, 0.00, 0.00</string>
 </resources>
