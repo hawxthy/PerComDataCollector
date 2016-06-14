@@ -365,7 +365,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 // this.getFileService().deleteFile(FILE_NAME);
                 //  this.getFileService().saveAFile(arffFile, this.openFileOutput(arffFile.getStrFileName(), this.MODE_APPEND));
-                // testyll
                 this.getFileService().appendToFile(newRecord, this.openFileOutput(arffFile.getStrFileName(), this.MODE_APPEND));
 
             } else {
