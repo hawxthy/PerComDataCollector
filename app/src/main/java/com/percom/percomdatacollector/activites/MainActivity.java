@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         //check if gyroscope is available
         if (gyroscope != null) {
-            sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_UI);
+            sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_FASTEST);
         } else {
             // Error do something here
         }
