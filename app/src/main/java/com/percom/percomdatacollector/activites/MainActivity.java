@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -69,6 +70,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Gyroscope
     private static Sensor gyroscope = null;
 
+    // Power Manager
+    PowerManager powerManager = null;
+    PowerManager.WakeLock wakeLock = null;
+
     /**
      * ServiceConnection to the FileService which creates a lose connection to the FileService.
      */
@@ -124,6 +129,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Gyroscope
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
+        // Power Manager
+        powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PerComWakelockTag");
+
+
         // listener
         tbRecord.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -133,9 +143,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     // start sensor recording
                     registerAccelerometer(sensorManager);
                     registerGyroscope(sensorManager);
+
+                    // WakeLock let's the service running with screen off
+                    wakeLock.acquire();
                 } else {
                     // stop sensor recording
                     unregisterAccelerometer(sensorManager);
+
+                    // Releases the claim to the CPU and battery waste
+                    wakeLock.release();
                 }
             }
         });
@@ -272,6 +288,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Only destroy the service when the activity was destroyed
         unregisterAccelerometer(sensorManager);
         unbindConnectioonAndKillfileService();
+
+        // Releases the claim to the CPU and battery waste
+        if (wakeLock != null)
+            wakeLock.release();
     }
 
     /**
