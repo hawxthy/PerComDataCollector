@@ -91,8 +91,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 FileHandler.getInstance().setCurrentArffFile(fileService.loadFileFromDevice(fileService.openFileInput(FILE_NAME)));
                 FileHandler.getInstance().getCurrentArffFile().setStrFileName(FILE_NAME, false);
 
-                txtvButtonTitle.setText("Dateigröße: " + getFileService().calcFileSize(FILE_NAME) + "KB");
-                // txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
+                // txtvButtonTitle.setText("Dateigröße: " + getFileService().calcFileSize(FILE_NAME) + "KB");
+                txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
             } catch (FileNotFoundException e) {
                 // Create a new file if no file was found
                 addArffFile();
@@ -208,10 +208,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // check if accelerometer is available
         if (accelerometer != null) {
             // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL); // Too slow
-            // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST); // Freezes the UI - Async Task MAYBE???
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST); // Freezes the UI - Async Task MAYBE???
 
             // Synchronization with the UI-Thread in order not to freeze the GUI
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+            // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
         } else {
             // Error, do something here
         }
@@ -359,9 +359,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         + movementType + ","
                         + sensor;
 
-                String newContent = "";
-                newContent = arffFile.getStrFileContent() + newRecord;
-                arffFile.setStrFileContent(newContent);
+                // String newContent = "";
+                // newContent = arffFile.getStrFileContent() + newRecord;
+                // arffFile.setStrFileContent(newContent);
 
                 // this.getFileService().deleteFile(FILE_NAME);
                 //  this.getFileService().saveAFile(arffFile, this.openFileOutput(arffFile.getStrFileName(), this.MODE_APPEND));
@@ -455,8 +455,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         // FileSize
-        txtvButtonTitle.setText("Dateigröße: " + Long.toString(getFileService().calcFileSize(FILE_NAME)) + "KB");
-        // txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
+        // txtvButtonTitle.setText("Dateigröße: " + Long.toString(getFileService().calcFileSize(FILE_NAME)) + "KB");
+        txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
 
     }
 
@@ -524,12 +524,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     /**
      * Return the file size as a string.
      * @param fileSize: long: FileSize in KB.
-     * @return The method returns the file size in MB when the file size of 1024 KB is reached.
+     * @return The method returns the file size in MB when the file size of 10MB is reached in
+     * KB.
      */
     private String fileSizeToMBString(long fileSize) {
         String strFileSize = "";
 
-        if (fileSize > 1024) {
+        if (fileSize > 10240) {
             fileSize = fileSize / 1024;
             strFileSize = "Dateigröße: " + Long.toString(fileSize) + "MB";
         } else {
