@@ -413,8 +413,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         // GYROSCOPE
         if (sensorType.getType() == Sensor.TYPE_GYROSCOPE) {
-            // Gyroscope: Read the x, y, z axis values from the sensor event
-            // Axis of the rotation (not normalized yet)
+
+            // maximal allowable margin of error
+            float EPSILON = 0.000000001f;
+            // Read the X, Y, Z value from sensor
             float axisX = event.values[0];
             float axisY = event.values[1];
             float axisZ = event.values[2];
@@ -422,12 +424,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // Gyroscope: Calculate the angular speed of the data
             float omegaMagnitude = (float) Math.sqrt(axisX*axisX + axisY*axisY + axisZ*axisZ);;
 
-            // Gyroscope: Normalize the rotation vector if it's big enough to get the axis
-            /*if (omegaMagnitude > EPSILON) {
+            // Normalize values of X, Y, Z axis
+            if (omegaMagnitude > EPSILON) {
                 axisX /= omegaMagnitude;
                 axisY /= omegaMagnitude;
                 axisZ /= omegaMagnitude;
-            }*/
+            }
 
             // Gyroscope: Delete the last few numbers, because the size is to big for the UI
             String strAxisX = Float.toString(axisX);
