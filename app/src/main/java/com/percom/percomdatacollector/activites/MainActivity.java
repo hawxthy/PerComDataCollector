@@ -24,6 +24,7 @@ import com.percom.percomdatacollector.R;
 import com.percom.percomdatacollector.controller.FileHandler;
 import com.percom.percomdatacollector.services.FileService;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -91,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 FileHandler.getInstance().setCurrentArffFile(fileService.loadFileFromDevice(fileService.openFileInput(FILE_NAME)));
                 FileHandler.getInstance().getCurrentArffFile().setStrFileName(FILE_NAME, false);
 
-                // txtvButtonTitle.setText("Dateigröße: " + getFileService().calcFileSize(FILE_NAME) + "KB");
                 txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
             } catch (FileNotFoundException e) {
                 // Create a new file if no file was found
@@ -130,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // The toggle is enabled
-                    // bindConnectionAndStartFileService();
                     // start sensor recording
                     registerAccelerometer(sensorManager);
                     registerGyroscope(sensorManager);
@@ -185,12 +184,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     private void exportToSdCard() {
         if (this.getFileService() != null) {
-            // Generate ArffFile
-            ArffFile arffFile = FileHandler.getInstance().getCurrentArffFile();
-
             // Use FileService for export
             try {
-                getFileService().exportAFileToSdCard(arffFile);
+                // Load ArffFile
+                FileHandler.getInstance().setCurrentArffFile(fileService.loadFileFromDevice(fileService.openFileInput(FILE_NAME)));
+                FileHandler.getInstance().getCurrentArffFile().setStrFileName(FILE_NAME, false);
+
+                getFileService().exportAFileToSdCard(FileHandler.getInstance().getCurrentArffFile());
             } catch (IOException e) {
                 Toast.makeText(this, "Export to SD-Card FAILED!", Toast.LENGTH_SHORT).show();
             }
@@ -205,13 +205,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      */
     public void registerAccelerometer(SensorManager sensorManager) {
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
         // check if accelerometer is available
         if (accelerometer != null) {
-            // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL); // Too slow
-            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST); // Freezes the UI - Async Task MAYBE???
-
-            // Synchronization with the UI-Thread in order not to freeze the GUI
-            // sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
         } else {
             // Error, do something here
         }
@@ -248,36 +245,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onStart() {
         super.onStart();
 
-        // Generate Binding and FileService
         bindConnectionAndStartFileService();
-        // registerAccelerometer(sensorManager);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        // Generate Binding and FileSerive
-        //bindConnectionAndStartFileService();
-        // registerAccelerometer(sensorManager);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        // unbindConnectioonAndKillfileService();
-        // finish();
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        // Only destroy the service when the activity was destroyed
-        // unregisterAccelerometer(sensorManager);
-        // unbindConnectioonAndKillfileService();
-        // unbindConnectioonAndKillfileService();
-        // finish();
     }
 
     @Override
@@ -364,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 // arffFile.setStrFileContent(newContent);
 
                 // this.getFileService().deleteFile(FILE_NAME);
-                //  this.getFileService().saveAFile(arffFile, this.openFileOutput(arffFile.getStrFileName(), this.MODE_APPEND));
+                // this.getFileService().saveAFile(arffFile, this.openFileOutput(arffFile.getStrFileName(), this.MODE_APPEND));
                 this.getFileService().appendToFile(newRecord, this.openFileOutput(arffFile.getStrFileName(), this.MODE_APPEND));
 
             } else {
@@ -435,7 +420,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             String strAxisX = Float.toString(axisX);
             String strAxisY = Float.toString(axisY);
             String strAxisZ = Float.toString(axisZ);
-            // Deletes the last a specified nummber
+
+            // Deletes the last a specified number
             int numberOfLetters = 3;
 
             strAxisX = strAxisX.substring(0, strAxisX.length()-numberOfLetters);
@@ -457,7 +443,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
 
         // FileSize
-        // txtvButtonTitle.setText("Dateigröße: " + Long.toString(getFileService().calcFileSize(FILE_NAME)) + "KB");
         txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
 
     }
