@@ -203,10 +203,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // Use FileService for export
             try {
                 // Load ArffFile
-                FileHandler.getInstance().setCurrentArffFile(fileService.loadFileFromDevice(fileService.openFileInput(FILE_NAME)));
-                FileHandler.getInstance().getCurrentArffFile().setStrFileName(FILE_NAME, false);
+                // FileHandler.getInstance().setCurrentArffFile(fileService.loadFileFromDevice(fileService.openFileInput(FILE_NAME)));
+                // FileHandler.getInstance().getCurrentArffFile().setStrFileName(FILE_NAME, false);
+                // getFileService().exportAFileToSdCard(FileHandler.getInstance().getCurrentArffFile());
 
-                getFileService().exportAFileToSdCard(FileHandler.getInstance().getCurrentArffFile());
+                getFileService().exportAFileToSdCard(FILE_NAME);
             } catch (IOException e) {
                 Toast.makeText(this, "Export to SD-Card FAILED!", Toast.LENGTH_SHORT).show();
             }

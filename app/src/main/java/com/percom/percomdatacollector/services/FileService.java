@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Environment;
@@ -14,13 +15,17 @@ import com.percom.percomdatacollector.Files.ArffFile;
 import com.percom.percomdatacollector.R;
 import com.percom.percomdatacollector.activites.MainActivity;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.channels.FileChannel;
 
 /**
  * This service class saves and deletes ArffFiles from the local storage or exports them to
@@ -232,9 +237,11 @@ public class FileService extends Service {
     }
 
     /**
-     * This method save the ArffFile to the SD-Card.
+     * This overloaded method copies fast the ArffFile to the SD-Card. It's using the arffFile.
+     * If this file is too large (16 MB) it can cause an OutOfMemory Exception.
      *
      * @param arffFile : ArffFile : ArffFile which should be saved.
+     * @throws IOException
      */
     public void exportAFileToSdCard(ArffFile arffFile) throws IOException {
         // State of the SD-Card
@@ -278,6 +285,82 @@ public class FileService extends Service {
             createAndSaveFile(appDir, arffFile);
 
             Toast.makeText(this, "Datei wurde exportiert", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * This overloaded method saves the ArffFile from the default directory to the SD-Card.
+     * A Buffered reader is used in order to copy large files over 16MB to prevent
+     * a OutOfMemory Ram error.
+     *
+     * @param fileName : String : The fileName.
+     * @throws IOException
+     */
+    public void exportAFileToSdCard(String fileName) throws IOException {
+        // State of the SD-Card
+        String strStatus        = Environment.getExternalStorageState();
+        String strAbsolutePath  = "";
+
+        // Device variable state
+        boolean canRead     = false;
+        boolean canWrite    = false;
+
+        // Check medium state
+        if (Environment.MEDIA_MOUNTED.equals(strStatus)) {
+            // Read/Write access
+            canRead = true;
+            canWrite = true;
+        } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(strStatus)) {
+            // Read access
+            canRead = true;
+            canWrite = false;
+        } else {
+            // No access
+            canRead = false;
+            canWrite = false;
+        }
+
+        // Read/Write access
+        if ((canRead) && (canWrite)) {
+            // Find rood directory
+            File fileExternal = Environment.getExternalStorageDirectory();
+
+            // Define storage path
+            strAbsolutePath = fileExternal.getAbsolutePath() + File.separator + "android"  + File.separator + "data" + File.separator + "arffExport" + File.separator + "files";
+
+            // FileObject for the directory
+            File appDir = new File(strAbsolutePath);
+
+            // Generate directories
+            appDir.mkdirs();
+
+            // Get the directory
+            File filesDir = getFilesDir();
+            File arffFile = new File(filesDir, fileName);
+
+            if (arffFile.exists()) {
+                // InputStream
+                InputStream  src = new FileInputStream(arffFile);
+
+                // OutputStream Buffered in order to prevent OutOffMemory RAM errors
+                File newFile = new File(appDir, fileName);
+                OutputStream dst = new BufferedOutputStream(new FileOutputStream(newFile), 1024);
+
+                byte[] buffer = new byte[1024];
+                int read;
+
+                while((read = src.read(buffer, 0, buffer.length)) > 0) {
+                    dst.write(buffer, 0, read);
+                }
+
+                src.close();
+                dst.flush();
+                dst.close();
+
+                Toast.makeText(this, "Datei wurde exportiert", Toast.LENGTH_SHORT).show();
+
+            }
+
         }
     }
 
