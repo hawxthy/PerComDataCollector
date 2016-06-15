@@ -94,8 +94,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             try {
                 // Load the content from the .arff file
-                FileHandler.getInstance().setCurrentArffFile(fileService.loadFileFromDevice(fileService.openFileInput(FILE_NAME)));
-                FileHandler.getInstance().getCurrentArffFile().setStrFileName(FILE_NAME, false);
+                // FileHandler.getInstance().setCurrentArffFile(fileService.loadFileFromDevice(fileService.openFileInput(FILE_NAME)));
+                // FileHandler.getInstance().getCurrentArffFile().setStrFileName(FILE_NAME, false);
+
+                // Check if an ArffFile exists
+                fileService.openFileInput(FILE_NAME);
+                FileHandler.getInstance().setCurrentArffFile(new ArffFile(FILE_NAME, ""));
 
                 txtvButtonTitle.setText(fileSizeToMBString(getFileService().calcFileSize(FILE_NAME)));
             } catch (FileNotFoundException e) {
